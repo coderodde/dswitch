@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="dswitch.vcxproj" Id="0a396182-632b-4350-9fcb-7627b7bca40c" />
+</Solution>
