@@ -11,6 +11,10 @@ class DirectoryEntry {
  public:
     DirectoryEntry() = default;
     ~DirectoryEntry() = default;
+    DirectoryEntry(std::string tag, std::string dir) 
+    : tag_name{tag}, 
+      tag_dir{dir} 
+      {}
 
     std::string getTagName() const {
         return tag_name;

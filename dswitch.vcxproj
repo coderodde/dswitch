@@ -130,6 +130,7 @@
     <ClCompile Include="dswitch.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="command_parser.hpp" />
     <ClInclude Include="directory_entry.hpp" />
     <ClInclude Include="directory_entry_table.hpp" />
   </ItemGroup>

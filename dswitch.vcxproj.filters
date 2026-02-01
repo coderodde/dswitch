@@ -26,5 +26,8 @@
     <ClInclude Include="directory_entry_table.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="command_parser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

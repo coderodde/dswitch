@@ -1,3 +1,4 @@
+#include "command_parser.hpp"
 #include "directory_entry.hpp"
 #include "directory_entry_table.hpp"
 #include <algorithm>
@@ -82,6 +83,7 @@ static std::string getPrevTagFileName() {
     return getFileNameImpl(PREV_TAG_NAME_FILE);
 }
 
+/*
 static const std::string OPTION_LIST_TAGS             = "-l";
 static const std::string OPTION_LIST_FULL             = "-L";
 static const std::string OPTION_LIST_SORTED_TAGS      = "-s";
@@ -92,7 +94,7 @@ static const std::string OPTION_LIST_DIRS_TAGS        = "-d";
 static const std::string OPTION_LIST_SORTED_DIRS_TAGS = "-D";
 static const std::string OPTION_REVERSE_ORDER         = "-r";
 static const std::string OPTION_ADD_ENTRY             = "-a";
-static const std::string OPTION_REMOVE_ENTRIES        = "-x";
+static const std::string OPTION_REMOVE_ENTRIES        = "-x";*/
 
 static void handlePreviousSwitch() {
     std::filesystem::path cwd = std::filesystem::current_path();
@@ -192,6 +194,8 @@ static void listFull(const DirectoryEntryTable& table) {
 }
 
 int main(int argc, char* argv[]) {
+    CommandParser commandParser(argc, argv);
+
     std::string tableFileName = getTagsFileName();
     std::ifstream ifs(tableFileName);
 
