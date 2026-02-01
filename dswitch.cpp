@@ -126,6 +126,26 @@ static void handlePreviousSwitch() {
 
 using namespace io::github::coderodde::dswitch;
 
+static std::string expandTilde(const std::string& path) {
+    if (path.empty() || path[0] != '~') {
+        return path;
+    }
+
+    std::string home = getHomeDirectory();
+
+    if (home.size() == 1) {
+        return home;
+    }
+
+    char separator = std::filesystem::path::preferred_separator;
+
+    if (path[0] == '~') {
+        return home + separator + path.substr(2);
+    }
+
+    return path;
+}
+
 int main(int argc, char* argv[]) {
     std::string tableFileName = getTagsFileName();
     std::ifstream ifs(tableFileName);
@@ -142,17 +162,11 @@ int main(int argc, char* argv[]) {
         DirectoryEntry* entry = table.findEntryByTagName(opt);
 
         if (entry != nullptr) {
-            std::filesystem::path dirPath = entry->getTagDirectory();
-            if (std::filesystem::exists(dirPath) &&
-                std::filesystem::is_directory(dirPath)) {
-                std::cout << "cd " << dirPath.string();
-            } else {
-                std::cerr << "Error: Directory does not exist: "
-                          << dirPath.string() << "\n";
-                return EXIT_FAILURE;
-            }
+            std::string dirName = entry->getTagDirectory();
+            dirName = expandTilde(dirName);
+            std::cout << dirName << "\n";
         } else {
-            std::cerr << "Error: No such tag: " << opt << "\n";
+            std::cerr << "[ERROR] Tag file is empty.\n";
             return EXIT_FAILURE;
         }
     }
