@@ -63,6 +63,26 @@ class DirectoryEntryTable {
                      entries.end());
     }
 
+    std::size_t getLongestTagLength() const {
+        std::size_t len = 0;
+
+        for (std::size_t i = 0; i < entries.size(); ++i) {
+            len = std::max(len, entries.at(i).getTagName().length());
+        }
+
+        return len;
+    }
+
+    std::size_t getLongestDirectoryLength() const {
+        std::size_t len = 0;
+
+        for (std::size_t i = 0; i < entries.size(); ++i) {
+            len = std::max(len, entries.at(i).getTagDirectory().length());
+        }
+
+        return len;
+    }
+
     DirectoryEntry* findEntryByTagName(const std::string& tagName) {
         DirectoryEntry target;
         target.setTagName(tagName);

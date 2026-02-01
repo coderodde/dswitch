@@ -1,5 +1,6 @@
 #include "directory_entry.hpp"
 #include "directory_entry_table.hpp"
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -146,6 +147,50 @@ static std::string expandTilde(const std::string& path) {
     return path;
 }
 
+static void listTags(const DirectoryEntryTable& table) {
+    for (size_t i = 0; i < table.size(); ++i) {
+        const DirectoryEntry& entry = table.getEntry(i);
+        std::cout << entry.getTagName() << "\n";
+    }
+}
+
+static std::size_t computeMaxTagLength(
+    const DirectoryEntryTable& table) {
+
+    std::size_t max_length = 0;
+
+    for (size_t i = 0; i < table.size(); ++i) {
+
+        const DirectoryEntry& entry = table.getEntry(i);
+        std::size_t length = entry.getTagName().size();
+        max_length = max(max_length, length);
+    }
+
+    return max_length;
+}
+
+static std::string getTagFormatString(
+    const DirectoryEntryTable& table) {
+    std::size_t max_length = table.getLongestTagLength();
+
+    return "%-" + std::to_string(max_length) + "s -> %s\n";
+}
+
+static void listFull(const DirectoryEntryTable& table) {
+    const std::size_t tag_len = table.getLongestTagLength();
+
+    for (size_t i = 0; i < table.size(); ++i) {
+        const DirectoryEntry& entry = table.getEntry(i);
+
+        std::cout << std::left 
+                  << std::setw(tag_len) 
+                  << entry.getTagName()
+                  << " -> "
+                  << entry.getTagDirectory() 
+                  << "\n";
+    }
+}
+
 int main(int argc, char* argv[]) {
     std::string tableFileName = getTagsFileName();
     std::ifstream ifs(tableFileName);
@@ -159,10 +204,16 @@ int main(int argc, char* argv[]) {
     } else if (argc == 2) {
         std::string opt = argv[1];
 
+        if (opt == OPTION_LIST_TAGS) {
+            listTags(table);
+        } else if (opt == OPTION_LIST_FULL) {
+            listFull(table);
+        }
+
         DirectoryEntry* entry = table.findEntryByTagName(opt);
 
         if (entry != nullptr) {
-            std::string dirName = entry->getTagDirectory();
+            std::string dirName = entry->getTagDirectory();                 
             dirName = expandTilde(dirName);
             std::cout << dirName << "\n";
         } else {
