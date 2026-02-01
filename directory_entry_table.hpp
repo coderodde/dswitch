@@ -13,8 +13,23 @@ class DirectoryEntryTable {
     DirectoryEntryTable()  = default;
     ~DirectoryEntryTable() = default;
 
-    void addEntry(const DirectoryEntry& entry) {
-        entries.push_back(entry);
+    bool addEntry(const std::string& tagName,
+                  const std::string& tagDirectory) {
+
+        // Try update:
+        for (auto& e : entries) {
+            if (e.getTagName() == tagName) {
+                e.setTagDirectory(tagDirectory);
+                return false;
+            }
+        }
+
+        // Once here, the entry does not exist, create:
+        DirectoryEntry entry;
+        entry.setTagName(tagName);
+        entry.setTagDirectory(tagDirectory);
+        entries.emplace_back(entry);
+        return true;
     }
 
     const DirectoryEntry& getEntry(size_t index) const {
@@ -48,6 +63,30 @@ class DirectoryEntryTable {
                      entries.end());
     }
 
+    DirectoryEntry* findEntryByTagName(const std::string& tagName) {
+        DirectoryEntry target;
+        target.setTagName(tagName);
+
+        std::size_t maximum_distance = SIZE_MAX;
+        DirectoryEntry* closest_entry = nullptr;
+
+        for (auto& entry : entries) {
+            std::size_t distance = 
+                entry.computeLevenshteinDistance(target);
+
+            if (distance == 0) {
+                return &entry;
+            }
+
+            if (maximum_distance > distance) {
+                maximum_distance = distance;
+                closest_entry = &entry;
+            }
+        }
+        
+        return closest_entry;
+    }
+
     friend std::ofstream& operator<<(std::ofstream& os, 
                                      const DirectoryEntryTable& table) {
 
@@ -73,6 +112,12 @@ class DirectoryEntryTable {
     }
 
  private:
+
+    void addEntry(const DirectoryEntry& entry) {
+         addEntry(entry.getTagName(),
+                  entry.getTagDirectory());
+    }
+
     std::vector<DirectoryEntry> entries;
 };
 

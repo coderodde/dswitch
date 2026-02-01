@@ -97,6 +97,11 @@ static void handlePreviousSwitch() {
     std::filesystem::path cwd = std::filesystem::current_path();
     std::string cwdName = cwd.string();
     std::string prevFileName = getPrevTagFileName();
+
+    // Make sure the file exists:
+    std::ofstream ofs_init(prevFileName, std::ios::app); 
+    ofs_init.close();
+
     std::ifstream ifs(prevFileName, std::ios_base::in);
     std::string prevDirectory;
 
@@ -134,7 +139,22 @@ int main(int argc, char* argv[]) {
     } else if (argc == 2) {
         std::string opt = argv[1];
 
+        DirectoryEntry* entry = table.findEntryByTagName(opt);
 
+        if (entry != nullptr) {
+            std::filesystem::path dirPath = entry->getTagDirectory();
+            if (std::filesystem::exists(dirPath) &&
+                std::filesystem::is_directory(dirPath)) {
+                std::cout << "cd " << dirPath.string();
+            } else {
+                std::cerr << "Error: Directory does not exist: "
+                          << dirPath.string() << "\n";
+                return EXIT_FAILURE;
+            }
+        } else {
+            std::cerr << "Error: No such tag: " << opt << "\n";
+            return EXIT_FAILURE;
+        }
     }
 
     DirectoryEntry entry;

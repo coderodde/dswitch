@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <string>
+#include <vector>
 
 namespace io::github::coderodde::dswitch {
 
@@ -25,6 +26,42 @@ class DirectoryEntry {
 
     void setTagDirectory(std::string dir) {
         tag_dir = dir;
+    }
+
+    std::size_t computeLevenshteinDistance(
+        const DirectoryEntry& other) const {
+        const std::string& s1 = tag_name;
+        const std::string& s2 = other.tag_name;
+
+        const std::size_t m = s1.size();
+        const std::size_t n = s2.size();
+
+        std::vector<std::vector<std::size_t>> dp(m + 1, 
+                    std::vector<std::size_t>(n + 1));
+
+        for (std::size_t i = 0; i <= m; ++i) {
+            dp[i][0] = i;
+        }
+
+        for (std::size_t j = 1; j <= n; ++j) {
+            dp[0][j] = j;
+        }
+
+        for (std::size_t i = 1; i <= m; ++i) {
+            for (std::size_t j = 1; j <= n; ++j) {
+
+                if (s1[i - 1] == s2[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = std::min({dp[i - 1][j] + 1,    // Deletion
+                                         dp[i][j - 1] + 1,    // Insertion
+                                         dp[i - 1][j - 1] + 1 // Substitution
+                                         });
+                }
+            }
+        }
+
+        return dp[m][n];
     }
 
     friend std::ofstream& operator<<(std::ofstream& os, 
