@@ -81,7 +81,6 @@ static std::string getPrevTagFileName() {
     return getFileNameImpl(PREV_TAG_NAME_FILE);
 }
 
-
 static const std::string OPTION_LIST_TAGS             = "-l";
 static const std::string OPTION_LIST_FULL             = "-L";
 static const std::string OPTION_LIST_SORTED_TAGS      = "-s";
@@ -91,7 +90,34 @@ static const std::string OPTION_LIST_DIRS_ONLY_SORTED = "-O";
 static const std::string OPTION_LIST_DIRS_TAGS        = "-d";
 static const std::string OPTION_LIST_SORTED_DIRS_TAGS = "-D";
 static const std::string OPTION_REVERSE_ORDER         = "-r";
+static const std::string OPTION_ADD_ENTRY             = "-a";
+static const std::string OPTION_REMOVE_ENTRIES        = "-x";
 
+static void handlePreviousSwitch() {
+    std::filesystem::path cwd = std::filesystem::current_path();
+    std::string cwdName = cwd.string();
+    std::string prevFileName = getPrevTagFileName();
+    std::ifstream ifs(prevFileName, std::ios_base::in);
+    std::string prevDirectory;
+
+    if (!ifs) {
+        throw std::logic_error("Could not open the prev file for reading.");
+    }
+
+    ifs >> prevDirectory;
+    ifs.close();
+
+    std::ofstream ofs(prevFileName, std::ios_base::trunc);
+
+    if (!ofs) {
+        throw std::logic_error("Could not open the prev file for writing.");
+    }
+
+    ofs << cwdName;
+    ofs.close();
+
+    std::cout << "cd " << prevDirectory;
+}
 
 using namespace io::github::coderodde::dswitch;
 
@@ -104,14 +130,13 @@ int main(int argc, char* argv[]) {
     ifs >> table;
 
     if (argc == 1) {
-
+        handlePreviousSwitch();
     } else if (argc == 2) {
         std::string opt = argv[1];
 
 
     }
-    std::cout << getTagsFileName() << "\n";
-    std::cout << getPrevTagFileName() << "\n";
+
     DirectoryEntry entry;
     return EXIT_SUCCESS;
 }
