@@ -105,30 +105,17 @@ static void handlePreviousSwitch() {
     std::string cwdName = cwd.string();
     std::string prevFileName = getPrevTagFileName();
 
-    // Make sure the file exists:
-    std::ofstream ofs_init(prevFileName, std::ios::app); 
-    ofs_init.close();
+    std::ifstream ifs(prevFileName);
+    std::string previoudDirectory;
 
-    std::ifstream ifs(prevFileName, std::ios_base::in);
-    std::string prevDirectory;
-
-    if (!ifs) {
-        throw std::logic_error("Could not open the prev file for reading.");
-    }
-
-    ifs >> prevDirectory;
+    ifs >> previoudDirectory;
     ifs.close();
 
-    std::ofstream ofs(prevFileName, std::ios_base::trunc);
-
-    if (!ofs) {
-        throw std::logic_error("Could not open the prev file for writing.");
-    }
-
+    std::ofstream ofs(prevFileName, std::ios::trunc);
     ofs << cwdName;
     ofs.close();
 
-    writeCommandFile("cd " + prevDirectory);
+    writeCommandFile("cd " + previoudDirectory);
 }
 
 static std::string expandTilde(const std::string& path) {
