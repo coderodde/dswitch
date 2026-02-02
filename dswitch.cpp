@@ -14,7 +14,13 @@ using io::github::coderodde::dswitch::DirectoryEntryTable;
 
 static const std::string TAG_FILE_NAME      = "tags";
 static const std::string PREV_TAG_NAME_FILE = "prev";
-static const std::string COMMAND_FILE_NAME  = ".ds_command";
+
+#ifdef _WIN32
+static const std::string COMMAND_FILE_NAME  = ".ds_command.bat";
+#else
+static const std::string COMMAND_FILE_NAME = ".ds_command.sh";
+#endif
+
 static const std::string DSWITCHER_HOME     = ".dswitcher";
 
 #ifdef _WIN32
