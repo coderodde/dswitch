@@ -265,7 +265,7 @@ int main(int argc, char* argv[]) {
                 table.removeEntry(argv[i]);
             }
 
-            std::ofstream ofs(getPrevTagFileName(), std::ios::trunc);
+            std::ofstream ofs(getTagsFileName(), std::ios::trunc);
             ofs << table;
         } else {
             std::cerr << "[ERROR] Invalid command line.\n";
