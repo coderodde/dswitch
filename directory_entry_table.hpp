@@ -42,6 +42,16 @@ class DirectoryEntryTable {
         return true;
     }
 
+    void removeEntry(const std::string& tag) {
+        entries.erase(
+            std::remove_if(entries.begin(), entries.end(),
+                [&](const DirectoryEntry& e) {
+                    return e.getTagName() == tag;
+                }),
+            entries.end()
+        );
+    }
+
     const DirectoryEntry& getEntry(size_t index) const {
         return entries.at(index);
     }

@@ -16,6 +16,7 @@ static const std::string TAG_FILE_NAME      = "tags";
 static const std::string PREV_TAG_NAME_FILE = "prev";
 static const std::string COMMAND_FILE_NAME  = ".ds_command";
 static const std::string DSWITCHER_HOME     = ".dswitcher";
+
 #ifdef _WIN32
 #define _CRT_SECURE_NO_WARNINGS
 #include <cstdlib>
@@ -236,6 +237,38 @@ int main(int argc, char* argv[]) {
             table.printDirsAndTags();
         } else {
             trySwitchByTag(table, opt);
+        }
+    } else if (argc == 4) {
+        // Should be the -a command (... -a tag dir):
+        std::string opt = argv[1];
+
+        if (opt == "-a") {
+            // Once here, add an entry:
+            table.addEntry(argv[2], argv[3]);
+            std::ofstream ofs(getTagsFileName(), std::ios::trunc);
+            ofs << table;
+        } else if (opt == "-x") {
+            // Once here (argc == 4), we are removing two tags:
+            table.removeEntry(argv[2]);
+            table.removeEntry(argv[3]);
+            std::ofstream ofs(getTagsFileName(), std::ios::trunc);
+            ofs << table;
+        } else {
+            std::cerr << "[ERROR] Invalid command line.\n";
+            return EXIT_FAILURE;
+        }
+    } else {
+        std::string opt = argv[1];
+
+        if (opt == "-x") {
+            for (int i = 2; i < argc; ++i) {
+                table.removeEntry(argv[i]);
+            }
+
+            std::ofstream ofs(getPrevTagFileName(), std::ios::trunc);
+            ofs << table;
+        } else {
+            std::cerr << "[ERROR] Invalid command line.\n";
         }
     }
 
