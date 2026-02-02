@@ -9,6 +9,9 @@
 #include <cstdlib>
 #include <string>
 
+using io::github::coderodde::dswitch::DirectoryEntry;
+using io::github::coderodde::dswitch::DirectoryEntryTable;
+
 static const std::string TAG_FILE_NAME      = "tags";
 static const std::string PREV_TAG_NAME_FILE = "prev";
 static const std::string COMMAND_FILE_NAME  = ".ds_command";
@@ -70,6 +73,18 @@ static std::string getFileNameImpl(const std::string& fileName) {
     }
 }
 
+static void writeCommandFile(const std::string& text) {
+    const std::string fileName = getFileNameImpl(COMMAND_FILE_NAME);
+    std::ofstream out(fileName, std::ios::trunc);
+
+    if (!out) {
+        throw std::logic_error("Could not write to the commamnd file.");
+    }
+
+    out << text;
+    out.close();
+}
+
 static std::string getTagsFileName() {
     return getFileNameImpl(TAG_FILE_NAME);
 }
@@ -108,8 +123,6 @@ static void handlePreviousSwitch() {
 
     writeCommandFile("cd " + prevDirectory);
 }
-
-using namespace io::github::coderodde::dswitch;
 
 static std::string expandTilde(const std::string& path) {
     if (path.empty() || path[0] != '~') {
@@ -152,7 +165,7 @@ static std::size_t computeMaxTagLength(
 
         const DirectoryEntry& entry = table.getEntry(i);
         std::size_t length = entry.getTagName().size();
-        max_length = max(max_length, length);
+        max_length = std::max(max_length, length);
     }
 
     return max_length;
@@ -180,20 +193,8 @@ static void listFull(const DirectoryEntryTable& table) {
     }
 }
 
-static void writeCommandFile(const std::string& text) {
-    const std::string fileName = getFileNameImpl(COMMAND_FILE_NAME);
-    std::ofstream out(fileName, std::ios::trunc);
-
-    if (!out) {
-        throw std::logic_error("Could not write to the commamnd file.");
-    }
-
-    out << text;
-    out.close();
-}
-
-static void trySwitchByTag(const DirectoryEntryTable& table,
-                           const std::string& tag) {
+static void trySwitchByTag(DirectoryEntryTable& table,
+                           const std::string tag)  {
     DirectoryEntry* p_entry = table.findEntryByTagName(tag);
 
     if (p_entry == nullptr) {

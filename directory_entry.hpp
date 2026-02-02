@@ -10,9 +10,6 @@ namespace io::github::coderodde::dswitch {
 class DirectoryEntry {
  public:
     DirectoryEntry() = default;
-
-    Di
-
     ~DirectoryEntry() = default;
     DirectoryEntry(std::string tag, std::string dir) 
     : tag_name{tag}, 
@@ -74,8 +71,8 @@ class DirectoryEntry {
     friend std::ofstream& operator<<(std::ofstream& os, 
                                      const DirectoryEntry& entry);
 
-    friend std::ifstream& operator>>(std::ifstream& is, 
-                                     DirectoryEntry& entry) {
+    inline friend std::ifstream& operator>>(std::ifstream& is, 
+                                            DirectoryEntry& entry) {
         std::string line;
 
         if (std::getline(is, line)) {
@@ -99,7 +96,7 @@ std::ofstream& operator<<(std::ofstream& os,
                         
     os << entry.tag_name << " " << entry.tag_dir;
     return os;
-}
+};
 
 } // namespace io::github::coderodde
 #endif// IO_GITHUB_CODERODDE_DIRECTORY_ENTRY_HPP_

@@ -4,6 +4,8 @@
 #include "directory_entry.hpp"
 #include <algorithm>
 #include <fstream>
+#include <iomanip>
+#include <iostream>
 #include <vector>
 
 namespace io::github::coderodde::dswitch {
@@ -12,12 +14,11 @@ class DirectoryEntryTable {
  public:
     DirectoryEntryTable()  = default;
 
-    DirectoryEntryTable(const DirectoryEntryTable& other) {
-        for (const DirectoryEntry& entry : other.entries) {
+    DirectoryEntryTable(DirectoryEntryTable& other) {
+        for (DirectoryEntry& entry : other.entries) {
             DirectoryEntry ne(entry);
-            entries.emplace_back(ne);
+            entries.push_back(ne);
         }
-
     }
 
     ~DirectoryEntryTable() = default;
@@ -92,7 +93,7 @@ class DirectoryEntryTable {
         return len;
     }
 
-    DirectoryEntry* findEntryByTagName(const std::string& tagName) const {
+    DirectoryEntry* findEntryByTagName(const std::string& tagName) {
         DirectoryEntry target;
         target.setTagName(tagName);
 
@@ -116,14 +117,14 @@ class DirectoryEntryTable {
         return closest_entry;
     }
 
-    void printTags() {
+    void printTags() const {
         for (const auto& e : entries) {
             std::cout << e.getTagName()
                       << "\n";
         }
     }
 
-    void printTagsAndDirs() {
+    void printTagsAndDirs() const {
         const std::size_t tagMaxLen = getLongestTagLength();
 
         for (const auto& e : entries) {
@@ -136,7 +137,7 @@ class DirectoryEntryTable {
         }
     }
 
-    void printDirsAndTags() {
+    void printDirsAndTags() const {
         const std::size_t dirMaxLen = getLongestDirectoryLength();
 
         for (const auto& e : entries) {
