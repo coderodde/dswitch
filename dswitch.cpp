@@ -212,6 +212,28 @@ static void trySwitchByTag(DirectoryEntryTable& table,
     writeCommandFile("cd " + path);
 }
 
+static void printHelp() {
+    std::cout << "ds [-l | -L | -s | -S | -d | -D]\n" 
+              << "    -l  list tags\n"
+              << "    _L  list tags and directories\n"
+              << "    -s  list tags in alphabetic order\n"
+              << "    -S  list tags and directories sorted by tags\n"
+              << "    -d  list directories first and then tags\n"
+              << "    -D  list directoires and tags sorted by directories\n"
+              << "\n"
+              << "ds -a TAG DIR\n"
+              << "    associate TAG with DIR\n"
+              << "\n"
+              << "ds -x TAG1 TAG2 ...\n"
+              << "    remove all tags TAG1 TAG2 ...\n" 
+              << "\n"
+              << "ds TAG\n"
+              << "    switch to directory closest to TAG\n"
+              << "\n"
+              << "ds\n"
+              << "   (no arguments) jump to the previous directory\n";
+}       
+
 int main(int argc, char* argv[]) {
 
     std::string tableFileName = getTagsFileName();
@@ -241,6 +263,8 @@ int main(int argc, char* argv[]) {
             table.printDirsAndTags();
         } else if (opt == "-d") {
             table.printDirsAndTags();
+        } else if (opt == "-h") {
+            printHelp();
         } else {
             trySwitchByTag(table, opt);
         }
