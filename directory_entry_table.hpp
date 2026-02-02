@@ -11,6 +11,15 @@ namespace io::github::coderodde::dswitch {
 class DirectoryEntryTable {
  public:
     DirectoryEntryTable()  = default;
+
+    DirectoryEntryTable(const DirectoryEntryTable& other) {
+        for (const DirectoryEntry& entry : other.entries) {
+            DirectoryEntry ne(entry);
+            entries.emplace_back(ne);
+        }
+
+    }
+
     ~DirectoryEntryTable() = default;
 
     bool addEntry(const std::string& tagName,
@@ -83,7 +92,7 @@ class DirectoryEntryTable {
         return len;
     }
 
-    DirectoryEntry* findEntryByTagName(const std::string& tagName) {
+    DirectoryEntry* findEntryByTagName(const std::string& tagName) const {
         DirectoryEntry target;
         target.setTagName(tagName);
 
@@ -107,9 +116,42 @@ class DirectoryEntryTable {
         return closest_entry;
     }
 
-    friend std::ofstream& operator<<(std::ofstream& os, 
-                                     const DirectoryEntryTable& table) {
+    void printTags() {
+        for (const auto& e : entries) {
+            std::cout << e.getTagName()
+                      << "\n";
+        }
+    }
 
+    void printTagsAndDirs() {
+        const std::size_t tagMaxLen = getLongestTagLength();
+
+        for (const auto& e : entries) {
+            std::cout << std::left
+                      << std::setw(tagMaxLen)
+                      << e.getTagName()
+                      << " "
+                      << e.getTagDirectory()
+                      << "\n";
+        }
+    }
+
+    void printDirsAndTags() {
+        const std::size_t dirMaxLen = getLongestDirectoryLength();
+
+        for (const auto& e : entries) {
+            std::cout << std::left
+                      << std::setw(dirMaxLen)
+                      << e.getTagDirectory()
+                      << " "
+                      << e.getTagName()
+                      << "\n";
+        }
+    }
+
+    inline friend std::ofstream& operator<<(std::ofstream& os, 
+                                            const DirectoryEntryTable& table) {
+                                      
         for (const auto& entry : table.entries) {
             os << entry.getTagName() 
                << " " 
@@ -120,8 +162,8 @@ class DirectoryEntryTable {
         return os;
     }
 
-    friend std::ifstream& operator>>(std::ifstream& is, 
-                                     DirectoryEntryTable& table) {
+    inline friend std::ifstream& operator>>(std::ifstream& is, 
+                                            DirectoryEntryTable& table) {
         DirectoryEntry entry;
 
         while (is >> entry) {

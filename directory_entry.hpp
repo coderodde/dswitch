@@ -10,6 +10,9 @@ namespace io::github::coderodde::dswitch {
 class DirectoryEntry {
  public:
     DirectoryEntry() = default;
+
+    Di
+
     ~DirectoryEntry() = default;
     DirectoryEntry(std::string tag, std::string dir) 
     : tag_name{tag}, 
@@ -94,7 +97,7 @@ class DirectoryEntry {
 std::ofstream& operator<<(std::ofstream& os, 
                          const DirectoryEntry& entry) {
                         
-    os << entry.tag_name << ":" << entry.tag_dir;
+    os << entry.tag_name << " " << entry.tag_dir;
     return os;
 }
 
