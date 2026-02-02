@@ -118,35 +118,55 @@ class DirectoryEntryTable {
     }
 
     void printTags() const {
+        bool first = true;
+
         for (const auto& e : entries) {
-            std::cout << e.getTagName()
-                      << "\n";
+
+            if (first) {
+                first = false;
+            } else {
+                std::cout << "\n";
+            }
+
+            std::cout << e.getTagName();
         }
     }
 
     void printTagsAndDirs() const {
         const std::size_t tagMaxLen = getLongestTagLength();
+        bool first = true;
 
         for (const auto& e : entries) {
+            if (first) {
+                first = false;
+            } else {
+                std::cout << "\n";
+            }
+
             std::cout << std::left
                       << std::setw(tagMaxLen)
                       << e.getTagName()
                       << " "
-                      << e.getTagDirectory()
-                      << "\n";
+                      << e.getTagDirectory();
         }
     }
 
     void printDirsAndTags() const {
         const std::size_t dirMaxLen = getLongestDirectoryLength();
+        bool first = true;
 
         for (const auto& e : entries) {
+            if (first) {
+                first = false;
+            } else {
+                std::cout << "\n";
+            }
+
             std::cout << std::left
                       << std::setw(dirMaxLen)
                       << e.getTagDirectory()
                       << " "
-                      << e.getTagName()
-                      << "\n";
+                      << e.getTagName();
         }
     }
 
