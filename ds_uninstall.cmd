@@ -2,8 +2,8 @@
 setlocal EnableExtensions EnableDelayedExpansion
 
 set "DSDIR=%USERPROFILE%\.dswitcher"
-
 rmdir /S /Q "%DSDIR%"
+rmdir "%DSDIR%"
 
 REM 2) Remove AutoRun value IF it matches what we installed
 set "REGKEY=HKCU\Software\Microsoft\Command Processor"
