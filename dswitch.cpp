@@ -100,24 +100,6 @@ static std::string getPrevTagFileName() {
     return getFileNameImpl(PREV_TAG_NAME_FILE);
 }
 
-static void handlePreviousSwitch() {
-    std::filesystem::path cwd = std::filesystem::current_path();
-    std::string cwdName = cwd.string();
-    std::string prevFileName = getPrevTagFileName();
-
-    std::ifstream ifs(prevFileName);
-    std::string previoudDirectory;
-
-    ifs >> previoudDirectory;
-    ifs.close();
-
-    std::ofstream ofs(prevFileName, std::ios::trunc);
-    ofs << cwdName;
-    ofs.close();
-
-    writeCommandFile("cd " + previoudDirectory);
-}
-
 static std::string expandTilde(const std::string& path) {
     if (path.empty() || path[0] != '~') {
         return path;
@@ -134,13 +116,42 @@ static std::string expandTilde(const std::string& path) {
     }
 
     // handle "~/..."
-    if (path.size() >= 2 && path[0] == '~' 
-                         && (path[1] == '/' || path[1] == '\\')) {
+    if (path.size() >= 2 && path[0] == '~'
+        && (path[1] == '/' || path[1] == '\\')) {
 
         return home + path.substr(1); // keeps the slash
     }
 
     return path;
+}
+
+static void handlePreviousSwitch() {
+    std::filesystem::path cwd = std::filesystem::current_path();
+    std::string cwdName = cwd.string();
+    std::string prevFileName = getPrevTagFileName();
+
+    std::ifstream ifs(prevFileName);
+    std::string previoudDirectory;
+
+    ifs >> previoudDirectory;
+    ifs.close();
+
+    previoudDirectory = expandTilde(previoudDirectory);
+
+    std::ofstream ofs(prevFileName, std::ios::trunc);
+    ofs << cwdName;
+    ofs.close();
+
+    writeCommandFile("cd " + previoudDirectory);
+}
+
+static void updatePreviousDirectory() {
+    std::filesystem::path cwd = std::filesystem::current_path();
+    std::string cwdName = cwd.string();
+    std::string prevFileName = getPrevTagFileName();
+    std::ofstream ofs(prevFileName, std::ios::trunc);
+    ofs << cwdName;
+    ofs.close();
 }
 
 static void listTags(const DirectoryEntryTable& table) {
@@ -195,8 +206,10 @@ static void trySwitchByTag(DirectoryEntryTable& table,
         throw std::logic_error("Tag file does not contain any entry.");
     }
 
-    const std::string path = p_entry->getTagDirectory();
+    std::string path = p_entry->getTagDirectory();
+    path = expandTilde(path);
     writeCommandFile("cd " + path);
+    updatePreviousDirectory();
 }
 
 static void printHelp() {
