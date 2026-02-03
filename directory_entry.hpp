@@ -1,6 +1,8 @@
 #ifndef IO_GITHUB_CODERODDE_DIRECTORY_ENTRY_HPP_
 #define IO_GITHUB_CODERODDE_DIRECTORY_ENTRY_HPP_
 
+#include <algorithm>
+#include <cstddef>
 #include <fstream>
 #include <string>
 #include <vector>

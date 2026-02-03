@@ -3,6 +3,7 @@
 
 #include "directory_entry.hpp"
 #include <algorithm>
+#include <cstdint>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
