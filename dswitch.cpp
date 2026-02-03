@@ -142,7 +142,7 @@ static void handlePreviousSwitch() {
     ofs << cwdName;
     ofs.close();
 
-    writeCommandFile("cd " + previoudDirectory);
+    writeCommandFile("cd " + previoudDirectory + "\n");
 }
 
 static void updatePreviousDirectory() {
@@ -208,7 +208,7 @@ static void trySwitchByTag(DirectoryEntryTable& table,
 
     std::string path = p_entry->getTagDirectory();
     path = expandTilde(path);
-    writeCommandFile("cd " + path);
+    writeCommandFile("cd " + path + "\n");
     updatePreviousDirectory();
 }
 

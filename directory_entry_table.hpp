@@ -141,6 +141,10 @@ class DirectoryEntryTable {
 
             std::cout << e.getTagName();
         }
+        
+        #ifndef _WIN32
+        std::cout << "\n";
+        #endif
     }
 
     void printTagsAndDirs() const {
@@ -160,6 +164,10 @@ class DirectoryEntryTable {
                       << " "
                       << e.getTagDirectory();
         }
+        
+        #ifndef _WIN32
+        std::cout << "\n";
+        #endif
     }
 
     void printDirsAndTags() const {
@@ -179,6 +187,10 @@ class DirectoryEntryTable {
                       << " "
                       << e.getTagName();
         }
+        
+        #ifndef _WIN32
+        std::cout << "\n";
+        #endif
     }
 
     inline friend std::ofstream& operator<<(std::ofstream& os, 

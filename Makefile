@@ -1,4 +1,4 @@
-dswitch: dswitch.cpp
+dswitch: dswitch.cpp directory_entry.hpp directory_entry_table.hpp
 	g++ -std=c++17 -O3 dswitch.cpp -o dswitch
 
 install: dswitch
@@ -7,10 +7,11 @@ install: dswitch
 	cp dswitch "$(HOME)/.dswitcher/dswitch"
 	cp ds.sh  "$(HOME)/.dswitcher/ds.sh"
 	chmod 755 "$(HOME)/.dswitcher/ds.sh"
-	@grep -qxF 'ds() { "$$HOME/.dswitcher/ds.sh" "$$@"; }' "$(HOME)/.bashrc" || \
-	echo 'ds() { "$$HOME/.dswitcher/ds.sh" "$$@"; }' >> "$(HOME)/.bashrc"
+	@grep -qxF "alias ds='. $$HOME/.dswitcher/ds.sh'" "$(HOME)/.bashrc" || \
+	echo "alias ds='. $$HOME/.dswitcher/ds.sh'" >> "$(HOME)/.bashrc"
 
 uninstall:
 	rm -rf "$(HOME)/.dswitcher"
-	@sed -i -e '/^ds() { "\$$HOME\/\.dswitcher\/ds\.sh" "\$$@"; }$$/d' "$(HOME)/.bashrc"
+	@sed -i'' "/^alias ds=/d" "$(HOME)/.bashrc" 2>/dev/null || \
+	sed -i  "/^alias ds=/d" "$(HOME)/.bashrc"
 
