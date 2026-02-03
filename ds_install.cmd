@@ -3,7 +3,8 @@
 mkdir "%USERPROFILE%\.dswitcher"
 copy /Y "ds.cmd" "%USERPROFILE%\.dswitcher\ds.cmd"
 copy /Y "x64\Release\dswitch.exe" "%USERPROFILE%\.dswitcher\dswitch.exe"
-echo home ~>>"%USERPROFILE%\.dswitcher\tags"
+del "%USERPROFILE%\.dswitcher\tags"
+echo home C:\Users\rodio>>"%USERPROFILE%\.dswitcher\tags"
 
 reg add "HKCU\Software\Microsoft\Command Processor" ^
  /v AutoRun ^

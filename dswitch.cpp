@@ -16,9 +16,9 @@ static const std::string TAG_FILE_NAME      = "tags";
 static const std::string PREV_TAG_NAME_FILE = "prev";
 
 #ifdef _WIN32
-static const std::string COMMAND_FILE_NAME  = ".ds_command.bat";
+static const std::string COMMAND_FILE_NAME  = "ds_command.bat";
 #else
-static const std::string COMMAND_FILE_NAME = ".ds_command.sh";
+static const std::string COMMAND_FILE_NAME = "ds_command.sh";
 #endif
 
 static const std::string DSWITCHER_HOME     = ".dswitcher";
