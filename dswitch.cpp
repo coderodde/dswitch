@@ -161,43 +161,6 @@ static void listTags(const DirectoryEntryTable& table) {
     }
 }
 
-static std::size_t computeMaxTagLength(
-    const DirectoryEntryTable& table) {
-
-    std::size_t max_length = 0;
-
-    for (size_t i = 0; i < table.size(); ++i) {
-
-        const DirectoryEntry& entry = table.getEntry(i);
-        std::size_t length = entry.getTagName().size();
-        max_length = std::max(max_length, length);
-    }
-
-    return max_length;
-}
-
-static std::string getTagFormatString(
-    const DirectoryEntryTable& table) {
-    std::size_t max_length = table.getLongestTagLength();
-
-    return "%-" + std::to_string(max_length) + "s -> %s\n";
-}
-
-static void listFull(const DirectoryEntryTable& table) {
-    const std::size_t tag_len = table.getLongestTagLength();
-
-    for (size_t i = 0; i < table.size(); ++i) {
-        const DirectoryEntry& entry = table.getEntry(i);
-
-        std::cout << std::left 
-                  << std::setw(tag_len) 
-                  << entry.getTagName()
-                  << " -> "
-                  << entry.getTagDirectory() 
-                  << "\n";
-    }
-}
-
 static void trySwitchByTag(DirectoryEntryTable& table,
                            const std::string tag)  {
     DirectoryEntry* p_entry = table.findEntryByTagName(tag);
@@ -234,7 +197,7 @@ static void printHelp() {
               << "   (no arguments) jump to the previous directory\n";
 }       
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) try {
 
     std::string tableFileName = getTagsFileName();
     std::ifstream ifs(tableFileName);
@@ -303,4 +266,6 @@ int main(int argc, char* argv[]) {
     }
 
     return EXIT_SUCCESS;
+} catch (std::logic_error& err) {
+    std::cerr << "[ERROR] " << err.what() << "\n";
 }
