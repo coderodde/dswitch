@@ -36,3 +36,16 @@ From `dswitch`, run:
 ```
 make uninstall
 ```
+
+# Getting help
+Just run: 
+```
+ds -h
+```
+for the help message explaining the entire CLI.
+
+# Notes
+1. After installing, you need to initiate a new command line/terminal session for the changes to take effect.
+2. The actual tags are stored in `~/.dswitcher/tags` file. The format of each entry is `TAG DIR`.
+3. `dswitch` relies on Levenshtein distance: if the given tag is not present in the tags file, the closest match will be selected.
+4. Invoking `ds` without arguments all over again, the tool will loop between two most recent directories.
