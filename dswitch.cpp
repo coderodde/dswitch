@@ -221,8 +221,7 @@ int main(int argc, char* argv[]) try {
         } else if (opt == "-S") {
             table.sortByTag();
             table.printTagsAndDirs();
-        }
-        else if (opt == "-Sr" || opt == "-rS") {
+        } else if (opt == "-Sr" || opt == "-rS") {
             table.sortByTag();
             table.reverse();
             table.printTagsAndDirs();
