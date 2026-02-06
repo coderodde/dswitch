@@ -79,6 +79,11 @@ class DirectoryEntryTable {
                   });
     }
 
+    void reverse() {
+        std::reverse(entries.begin(), 
+                     entries.end());
+    }
+
     std::size_t getLongestTagLength() const {
         std::size_t len = 0;
 

@@ -180,9 +180,12 @@ static void printHelp() {
               << "    -l  list tags\n"
               << "    _L  list tags and directories\n"
               << "    -s  list tags in alphabetic order\n"
+              << "    -sr or -rs  same as -s but in reverse alphabetic order\n"
               << "    -S  list tags and directories sorted by tags\n"
+              << "    -Sr or -rS  same as -S but in reverse order\n"
               << "    -d  list directories first and then tags\n"
               << "    -D  list directoires and tags sorted by directories\n"
+              << "    -Dr or -rD  same as -D but in reverse order\n"
               << "\n"
               << "ds -a TAG DIR\n"
               << "    associate TAG with DIR\n"
@@ -218,11 +221,24 @@ int main(int argc, char* argv[]) try {
         } else if (opt == "-S") {
             table.sortByTag();
             table.printTagsAndDirs();
+        }
+        else if (opt == "-Sr" || opt == "-rS") {
+            table.sortByTag();
+            table.reverse();
+            table.printTagsAndDirs();
         } else if (opt == "-s") {
             table.sortByTag();
             table.printTags();
+        } else if (opt == "-sr" || opt == "-rs") {
+            table.sortByTag();
+            table.reverse();
+            table.printTags();
         } else if (opt == "-D") {
             table.sortByDirectory();
+            table.printDirsAndTags();
+        } else if (opt == "-Dr" || opt == "-rD") {
+            table.sortByDirectory();
+            table.reverse();
             table.printDirsAndTags();
         } else if (opt == "-d") {
             table.printDirsAndTags();
