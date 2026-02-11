@@ -26,10 +26,6 @@ enum class TerminalType {
 static const std::string TAG_FILE_NAME      = "tags";
 static const std::string PREV_TAG_NAME_FILE = "prev";
 
-#ifdef _WIN32
-#include <windows.h>
-#endif 
-
 static TerminalType getTerminalType() {
 #ifdef _WIN32
     char* buffer = nullptr;
