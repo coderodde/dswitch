@@ -1,7 +1,7 @@
 rm -f ~/.dswitcher/ds_command.sh
-set DSWITCH_SHELL=bash
+export DSWITCH_SHELL=bash
 ~/.dswitcher/dswitch $@
-set DSWITCH_SHELL=
+unset DSWITCH_SHELL=
 
 if [ -f ~/.dswitcher/ds_command.sh ]; then
     . ~/.dswitcher/ds_command.sh
