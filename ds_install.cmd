@@ -1,2 +1,2 @@
 call .\ds_install.cmd.cmd
-powershell -NoProfile -ExecutionPolicy Bypass -File ".\ds_install.ps1"
+powershell -NoProfile -ExecutionPolicy Bypass -File ".\ds_install.ps.ps1"
