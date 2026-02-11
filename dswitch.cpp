@@ -229,13 +229,6 @@ static void updatePreviousDirectory() {
     ofs.close();
 }
 
-static void listTags(const DirectoryEntryTable& table) {
-    for (size_t i = 0; i < table.size(); ++i) {
-        const DirectoryEntry& entry = table.getEntry(i);
-        std::cout << entry.getTagName() << "\n";
-    }
-}
-
 static void trySwitchByTag(DirectoryEntryTable& table,
                            const std::string tag)  {
     DirectoryEntry* p_entry = table.findEntryByTagName(tag);
