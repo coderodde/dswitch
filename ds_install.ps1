@@ -50,8 +50,6 @@ function ds {
     & "$env:USERPROFILE\.dswitcher\ds.ps1" @args
 }
 
-. $PROFILE
-
 $regPath = "HKCU:\Software\Microsoft\Command Processor"
 $valueName = "AutoRun"
 $valueData = 'doskey ds=call "%USERPROFILE%\.dswitcher\ds.cmd" $*'

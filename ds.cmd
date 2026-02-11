@@ -5,9 +5,9 @@ set "DSEXE=%DSDIR%\dswitch.exe"
 
 set DSWITCH_SHELL=cmd
 del "%DSCMD%" 2>nul
-set DSWITCH_SHELL=
 
 "%DSEXE%" %*
+set DSWITCH_SHELL=
 
 if exist "%DSCMD%" (
     call "%DSCMD%"
