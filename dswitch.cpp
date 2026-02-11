@@ -246,7 +246,7 @@ static void trySwitchByTag(DirectoryEntryTable& table,
 static void printHelp() {
     std::cout << "ds [-l | -L | -s | -S | -d | -D]\n" 
               << "    -l          list tags\n"
-              << "    _L          list tags and directories\n"
+              << "    -L          list tags and directories\n"
               << "    -s          list tags in alphabetic order\n"
               << "    -sr or -rs  same as -s but in reverse order\n"
               << "    -S          list tags and directories sorted by tags\n"
