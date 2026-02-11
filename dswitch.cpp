@@ -1,27 +1,77 @@
 #include "directory_entry.hpp"
 #include "directory_entry_table.hpp"
 #include <algorithm>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
-#include <cstdlib>
 #include <string>
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 using io::github::coderodde::dswitch::DirectoryEntry;
 using io::github::coderodde::dswitch::DirectoryEntryTable;
+
+enum class TerminalType {
+    CMD,
+    POWERSHELL,
+    BASH,
+    UNKNOWN
+};
 
 static const std::string TAG_FILE_NAME      = "tags";
 static const std::string PREV_TAG_NAME_FILE = "prev";
 
 #ifdef _WIN32
-static const std::string COMMAND_FILE_NAME  = "ds_command.bat";
+#include <windows.h>
+#endif 
+
+static TerminalType getTerminalType() {
+#ifdef _WIN32
+    char* buffer = nullptr;
+    size_t size = 0;
+
+    errno_t err = _dupenv_s(&buffer, &size, "DSWITCH_SHELL");
+
+    std::string env;
+
+    if (err == 0 && buffer != nullptr) {
+        env = buffer;
+        free(buffer);  // IMPORTANT: free allocated memory
+    }
+    else {
+        return TerminalType::UNKNOWN;
+    }
+
 #else
-static const std::string COMMAND_FILE_NAME = "ds_command.sh";
+    const char* value = std::getenv("DSWITCH_SHELL");
+
+    if (!value) {
+        return TerminalType::UNKNOWN;
+    }
+    std::string env = value;
 #endif
 
-static const std::string DSWITCHER_HOME     = ".dswitcher";
+    if (env == "cmd") {
+        return TerminalType::CMD;
+    } else if (env == "powershell") {
+        return TerminalType::POWERSHELL;
+    } else if (env == "bash") {
+        return TerminalType::BASH;
+    }else {
+        return TerminalType::UNKNOWN;
+    }
+}
+
+static const std::string COMMAND_FILE_NAME_CMD_EXE    = "ds_command.bat";
+static const std::string COMMAND_FILE_NAME_POWERSHELL = "ds_command.ps1";
+static const std::string COMMAND_FILE_NAME_BASH       = "ds_command.sh";
+
+static const std::string DSWITCHER_HOME = ".dswitcher";
 
 #ifdef _WIN32
 #define _CRT_SECURE_NO_WARNINGS
@@ -80,8 +130,8 @@ static std::string getFileNameImpl(const std::string& fileName) {
     }
 }
 
-static void writeCommandFile(const std::string& text) {
-    const std::string fileName = getFileNameImpl(COMMAND_FILE_NAME);
+static void writeCommandFile(const std::string& text,
+                             const std::string& fileName) {
     std::ofstream out(fileName, std::ios::trunc);
 
     if (!out) {
@@ -125,6 +175,25 @@ static std::string expandTilde(const std::string& path) {
     return path;
 }
 
+static std::string getCommandFileName() {
+    TerminalType type = getTerminalType();
+    std::string fileName;
+
+    switch (type) {
+    case TerminalType::CMD:
+        return getFileNameImpl(COMMAND_FILE_NAME_CMD_EXE);
+
+    case TerminalType::POWERSHELL:
+        return getFileNameImpl(COMMAND_FILE_NAME_POWERSHELL);
+
+    case TerminalType::BASH:
+        return getFileNameImpl(COMMAND_FILE_NAME_BASH);
+
+    default:
+        throw std::logic_error("Could not detect the parent shell.");
+    }
+}
+
 static void handlePreviousSwitch() {
     std::filesystem::path cwd = std::filesystem::current_path();
     std::string cwdName = cwd.string();
@@ -142,7 +211,13 @@ static void handlePreviousSwitch() {
     ofs << cwdName;
     ofs.close();
 
-    writeCommandFile("cd " + previoudDirectory + "\n");
+    writeCommandFile("cd " + previoudDirectory + "\n",
+                     getCommandFileName());
+#ifdef _WIN32
+    _putenv("DSWITCH_SHELL=");
+#else
+    unsetenv("DSWITCH_SHELL");
+#endif
 }
 
 static void updatePreviousDirectory() {
@@ -171,7 +246,7 @@ static void trySwitchByTag(DirectoryEntryTable& table,
 
     std::string path = p_entry->getTagDirectory();
     path = expandTilde(path);
-    writeCommandFile("cd " + path + "\n");
+    writeCommandFile("cd " + path + "\n", getCommandFileName());
     updatePreviousDirectory();
 }
 
