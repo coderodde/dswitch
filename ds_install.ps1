@@ -23,17 +23,8 @@ if (-not (Test-Path -LiteralPath $PROFILE)) {
     New-Item -ItemType File -Path $PROFILE -Force | Out-Null
 }
 
-# --- Add ds function to profile (idempotent + safe) ---
+# --- Add ds function to $PROFILE (idempotent) ---
 $markerStart = "# >>> dswitcher >>>"
-$markerEnd   = "# <<< dswitcher <<<"
-
-$snippet = @"
-$markerStart
-function ds {
-    & `"$dsPs1`" @args
-}
-$markerEnd
-"@
 
 $profileText = ""
 try {
@@ -43,15 +34,41 @@ try {
 }
 
 if ($profileText -notmatch [regex]::Escape($markerStart)) {
-    Add-Content -LiteralPath $PROFILE -Value ("`n" + $snippet + "`n")
+    Add-Content -Path $PROFILE -Value @"
+
+# >>> dswitcher >>>
+function ds {
+    & "`$env:USERPROFILE\.dswitcher\ds.ps1" @args
+}
+# <<< dswitcher <<<
+
+"@
 }
 
 # --- Activate immediately in current session ---
 function ds {
-    & $dsPs1 @args
+    & "$env:USERPROFILE\.dswitcher\ds.ps1" @args
 }
+
+. $PROFILE
+
+$regPath = "HKCU:\Software\Microsoft\Command Processor"
+$valueName = "AutoRun"
+$valueData = 'doskey ds=call "%USERPROFILE%\.dswitcher\ds.cmd" $*'
+
+# Ensure the key exists
+New-Item -Path $regPath -Force | Out-Null
+
+# Create or overwrite the AutoRun value as REG_EXPAND_SZ
+New-ItemProperty `
+    -Path $regPath `
+    -Name $valueName `
+    -PropertyType ExpandString `
+    -Value $valueData `
+    -Force | Out-Null
+
 
 Write-Host "Installed to $dsDir"
 Write-Host "ds is available now in this session."
 Write-Host "It will also be available in new PowerShell sessions via: $PROFILE"
-Write-Host "Tip: if a new session doesn't pick it up, run: . `$PROFILE"
+Write-Host "Tip: to enable it in THIS session without restarting, run: . `$PROFILE"
