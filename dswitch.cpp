@@ -264,6 +264,71 @@ static void printHelp() {
               << "   (no arguments) jump to the previous directory\n";
 }       
 
+static void createDirectory(char* dir) {
+    std::string d {dir};
+
+    if (d.empty()) {
+        return;
+    }
+
+    if (d[0] == '~') {
+        std::string fullPath = expandTilde(d);
+        std::filesystem::create_directories(d);
+        return;
+    }
+
+    TerminalType type = getTerminalType();
+
+    if (type == TerminalType::BASH) {
+        if (d[0] == '/') {
+            std::filesystem::create_directories(d);
+        } else {
+            std::string fulld 
+                = std::string(std::filesystem::current_path().string());
+            
+            if (d[0] == '/') {
+                fulld += d.substr(1);
+            } else if (d[0] == '.') {
+                fulld += "/" + d.substr(2);
+            } else {
+                fulld += "/" + d;
+            }
+
+            std::filesystem::create_directories(fulld);
+        }
+
+        return;
+    }
+
+    if (type == TerminalType::CMD || 
+        type == TerminalType::POWERSHELL) {
+
+        for (char driveChar = 'A'; driveChar <= 'Z'; ++driveChar) {
+            std::string drivePath = std::string(1, driveChar) + ":\\";
+
+            if (d.starts_with(drivePath)) {
+                std::filesystem::create_directories(d);
+                return;
+            }
+        }
+
+        std::string pathName = std::filesystem::current_path().string();
+
+        if (d[0] == '\\') {
+            pathName += d;
+        } else if (d[0] == '.' && d[1] == '\\') {
+            pathName += d.substr(1);
+        } else {
+            pathName += "\\" + d;
+        }
+
+        std::filesystem::create_directories(pathName);
+        return;
+    }
+
+    throw std::logic_error("Unknown terminal type.");
+}
+
 int main(int argc, char* argv[]) try {
 
     std::string tableFileName = getTagsFileName();
@@ -319,6 +384,11 @@ int main(int argc, char* argv[]) try {
             table.addEntry(argv[2], argv[3]);
             std::ofstream ofs(getTagsFileName(), std::ios::trunc);
             ofs << table;
+        } else if (opt == "-ac" || opt == "-ca") {
+            table.addEntry(argv[2], argv[3]);
+            std::ofstream ofs(getTagsFileName(), std::ios::trunc);
+            ofs << table;
+            createDirectory(argv[3]);
         } else if (opt == "-x") {
             // Once here (argc == 4), we are removing two tags:
             table.removeEntry(argv[2]);
