@@ -264,26 +264,20 @@ static void printHelp() {
               << "   (no arguments) jump to the previous directory\n";
 }       
 
-static void createDirectory(char* dir) {
-    if (dir == nullptr) {
+static void createDirectory(std::string& dir) {
+    if (dir.empty()) {
         return;
     }
 
-    std::string d{dir};
+    dir = expandTilde(dir);
 
-    if (d.empty()) {
-        return;
+    std::filesystem::path path{dir};
+
+    if (!path.is_absolute()) {
+        path = std::filesystem::current_path() / path;
     }
 
-    d = expandTilde(d);
-
-    std::filesystem::path p{d};
-
-    if (!p.is_absolute()) {
-        p = std::filesystem::current_path() / p;
-    }
-
-    std::filesystem::create_directories(p);
+    std::filesystem::create_directories(path);
 }
 
 int main(int argc, char* argv[]) try {
@@ -338,14 +332,26 @@ int main(int argc, char* argv[]) try {
 
         if (opt == "-a") {
             // Once here, add an entry:
-            table.addEntry(argv[2], argv[3]);
-            std::ofstream ofs(getTagsFileName(), std::ios::trunc);
-            ofs << table;
+             std::string dir = argv[3];
+
+             if (dir == ".") {
+                dir = std::filesystem::current_path().string();
+             }
+
+             table.addEntry(argv[2], dir);
+             std::ofstream ofs(getTagsFileName(), std::ios::trunc);
+                ofs << table;
         } else if (opt == "-ac" || opt == "-ca") {
-            table.addEntry(argv[2], argv[3]);
+            std::string dir = argv[3];
+
+            if (dir == ".") {
+                dir = std::filesystem::current_path().string();
+            }
+
+            table.addEntry(argv[2], dir);
             std::ofstream ofs(getTagsFileName(), std::ios::trunc);
             ofs << table;
-            createDirectory(argv[3]);
+            createDirectory(dir);
         } else if (opt == "-x") {
             // Once here (argc == 4), we are removing two tags:
             table.removeEntry(argv[2]);
