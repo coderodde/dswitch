@@ -280,6 +280,20 @@ static void createDirectory(std::string& dir) {
     std::filesystem::create_directories(path);
 }
 
+static std::string handleDotOperator(const std::string& dir) {
+    if (dir.empty()) {
+        throw std::logic_error("Directory cannot be empty.");
+    }
+
+    if (dir == ".") {
+        return std::filesystem::current_path().string();
+    } else if (dir.starts_with("./") || dir.starts_with(".\\")) {
+        return std::filesystem::current_path().string() + dir.substr(1);
+    } else {
+        return std::filesystem::absolute(expandTilde(dir)).string();
+    }
+}
+
 int main(int argc, char* argv[]) try {
 
     std::string tableFileName = getTagsFileName();
@@ -332,22 +346,12 @@ int main(int argc, char* argv[]) try {
 
         if (opt == "-a") {
             // Once here, add an entry:
-             std::string dir = argv[3];
-
-             if (dir == ".") {
-                dir = std::filesystem::current_path().string();
-             }
-
-             table.addEntry(argv[2], dir);
-             std::ofstream ofs(getTagsFileName(), std::ios::trunc);
-                ofs << table;
+            std::string dir = handleDotOperator(argv[3]);
+            table.addEntry(argv[2], dir);
+            std::ofstream ofs(getTagsFileName(), std::ios::trunc);
+            ofs << table;
         } else if (opt == "-ac" || opt == "-ca") {
-            std::string dir = argv[3];
-
-            if (dir == ".") {
-                dir = std::filesystem::current_path().string();
-            }
-
+            std::string dir = handleDotOperator(argv[3]);
             table.addEntry(argv[2], dir);
             std::ofstream ofs(getTagsFileName(), std::ios::trunc);
             ofs << table;
@@ -378,6 +382,6 @@ int main(int argc, char* argv[]) try {
     }
 
     return EXIT_SUCCESS;
-} catch (std::logic_error& err) {
+    } catch (std::logic_error& err) {
     std::cerr << "[ERROR] " << err.what() << "\n";
 }
