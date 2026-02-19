@@ -253,6 +253,10 @@ static void printHelp() {
               << "\n"
               << "ds -a TAG DIR\n"
               << "    associate TAG with DIR\n"
+              << "ds -ac TAG DIR\n"
+              << "    associate TAG with DIR, create DIR if does not exist\n"
+              << "ds -ca TAG DIR\n"
+              << "    same as above\n"
               << "\n"
               << "ds -x TAG1 TAG2 ...\n"
               << "    remove all tags TAG1 TAG2 ...\n" 
@@ -261,7 +265,10 @@ static void printHelp() {
               << "    switch to directory closest to TAG\n"
               << "\n"
               << "ds\n"
-              << "   (no arguments) jump to the previous directory\n";
+              << "   (no arguments) jump to the previous directory\n"
+              << "   and mark the current directory as previous.\n"
+              << "   This allows jumping between two most\n"
+              << "   recent directories back and forth.\n";
 }       
 
 static void createDirectory(std::string& dir) {
